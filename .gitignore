@@ -1,0 +1,4 @@
+/.idea
+packages/
+*.iml
+pubspec.lock
