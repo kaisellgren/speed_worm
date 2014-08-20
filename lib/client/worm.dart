@@ -3,25 +3,35 @@ library worm;
 import 'dart:math';
 import 'game.dart';
 import 'dart:html';
+import 'colors.dart';
 
 class Worm {
   Point position;
   double speed = 0.0;
   double gravity = 0.1;
   int size = 8;
-  String color;
+  bool ai = false;
+  Color color;
   Game game;
   List<Point> previousPositions = [];
+  Random random = new Random();
+
+  void goUpwards() {
+    gravity -= position.y / game.maxHeight * 2;
+  }
 
   void step() {
-    previousPositions.insert(0, position);
+    // AI.
+    if (ai) {
+      if (random.nextBool()) goUpwards();
+    }
 
     // Movement.
-    if (game.keyboard.isPressed(KeyCode.SPACE)) {
-      gravity -= position.y / game.maxHeight;
-    } else {
-      gravity += position.y / game.maxHeight;
+    if (game.keyboard.isPressed(KeyCode.SPACE) && !ai) {
+      goUpwards();
     }
+
+    gravity += position.y / game.maxHeight;
 
     speed = position.y / 50;
     position = new Point(position.x + speed, position.y + gravity);
@@ -37,26 +47,25 @@ class Worm {
       gravity = 0.0;
     }
 
-    // Draw the position and previous position with more opacity.
-    draw(position: position, opacity: 1.0);
+    previousPositions.insert(0, position);
 
-    for (var i = 0, length = previousPositions.length; i < length; i++) {
-      draw(position: previousPositions[i], opacity: 1 - i / 100);
-    }
+    draw();
 
     if (previousPositions.length > 100) previousPositions = previousPositions.sublist(0, 100);
   }
 
-  void draw({Point position, double opacity}) {
-    var gradient = game.context.createRadialGradient(position.x, position.y, 0, position.x, position.y, size);
-    gradient.addColorStop(0.2, '#6bc600');
-    gradient.addColorStop(0.8, '#437b00');
+  void draw() {
+    for (var i = 0, length = previousPositions.length; i < length - 1; i++) {
+      final alpha = 1 - i /100;
 
-    game.context.beginPath();
-    game.context.globalAlpha = opacity;
-    game.context.arc(position.x, position.y, size, 0, 2 * PI, false);
-    game.context.fillStyle = gradient;
-    game.context.fill();
-    game.context.globalAlpha = 1;
+      game.context
+        ..beginPath()
+        ..lineWidth = size
+        ..strokeStyle = 'rgba(${color.red}, ${color.green}, ${color.blue}, $alpha)'
+        ..moveTo(previousPositions[i].x, previousPositions[i].y)
+        ..lineTo(previousPositions[i + 1].x, previousPositions[i + 1].y)
+        ..stroke()
+        ..closePath();
+    }
   }
 }
