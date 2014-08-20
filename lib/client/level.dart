@@ -11,7 +11,7 @@ class Shape {
 
 class Level {
   Game game;
-  int size = 4096;
+  int size = 8192;
   List<Shape> shapes = [];
   Random random = new Random();
 
@@ -50,21 +50,17 @@ class Level {
     points.add(new Point(0, game.maxHeight));
 
     shapes.add(new Shape(points));
-
-    /*shapes.add(
-      new Shape([const Point(0, 700), const Point(700, 700), const Point(600, 650), const Point(32, 640)])
-    );*/
   }
 
   void draw() {
     shapes.forEach((shape) {
       game.context
         ..fillStyle = '#764e00'
-        ..moveTo(shape.points.first.x, shape.points.first.y);
+        ..moveTo(shape.points.first.x + game.cameraXShift, shape.points.first.y + game.cameraYShift);
 
       for (var i = 1, length = shape.points.length; i < length; i++) {
         game.context
-          ..lineTo(shape.points[i].x, shape.points[i].y);
+          ..lineTo(shape.points[i].x + game.cameraXShift, shape.points[i].y + game.cameraYShift);
       }
 
       game.context

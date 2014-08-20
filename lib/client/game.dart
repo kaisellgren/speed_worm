@@ -7,6 +7,7 @@ import 'colors.dart';
 import 'keyboard.dart';
 import 'worm.dart';
 import 'level.dart';
+import 'camera.dart';
 
 class Game {
   CanvasRenderingContext2D context;
@@ -14,6 +15,7 @@ class Game {
   List<Worm> worms = [];
   Keyboard keyboard = new Keyboard();
   Level level;
+  Camera camera;
 
   int maxHeight = 800;
   int maxWidth = 1280;
@@ -37,6 +39,7 @@ class Game {
     }
 
     level = new Level(this);
+    camera = new Camera(this);
 
     window.requestAnimationFrame(frame);
     window.onResize.listen((_) => resizeCanvas());
@@ -45,17 +48,21 @@ class Game {
   }
 
   void resizeCanvas() {
-    canvas.width = window.outerWidth;
-    canvas.height = window.outerHeight;
+    canvas.width = min(window.outerWidth, maxWidth);
+    canvas.height = min(window.outerHeight, maxHeight);
   }
 
   void frame(double time) {
     context.fillStyle = 'black';
     context.fillRect(0, 0, maxWidth, maxHeight);
 
+    camera.step();
     level.draw();
     worms.forEach((worm) => worm.step());
 
     window.requestAnimationFrame(frame);
   }
+
+  double get cameraXShift => -camera.position.x;
+  double get cameraYShift => -camera.position.y;
 }

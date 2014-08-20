@@ -62,8 +62,8 @@ class Worm {
         ..beginPath()
         ..lineWidth = size
         ..strokeStyle = 'rgba(${color.red}, ${color.green}, ${color.blue}, $alpha)'
-        ..moveTo(previousPositions[i].x, previousPositions[i].y)
-        ..lineTo(previousPositions[i + 1].x, previousPositions[i + 1].y)
+        ..moveTo(previousPositions[i].x + game.cameraXShift, previousPositions[i].y + game.cameraYShift)
+        ..lineTo(previousPositions[i + 1].x + game.cameraXShift, previousPositions[i + 1].y + game.cameraYShift)
         ..stroke()
         ..closePath();
     }
