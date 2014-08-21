@@ -6,6 +6,9 @@ class Color {
   final int blue;
 
   Color(this.red, this.green, this.blue);
+
+  String toString() => 'rgb($red, $green, $blue)';
+  String toRgba(num opacity) => 'rgba($red, $green, $blue, $opacity)';
 }
 
 final COLORS = [

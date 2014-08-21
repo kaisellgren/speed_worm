@@ -15,6 +15,10 @@ class Camera {
     if (player != null) {
       final x = player.position.x - game.canvas.width / 2;
       position = new Point(max(0, x), 0);
+
+      // Let's pretend the player hit something.
+      //player.size -= 0.03;
+      //if (player.size < 2) player.size = 2;
     }
   }
 }

@@ -55,6 +55,7 @@ class Level {
   void draw() {
     shapes.forEach((shape) {
       game.context
+        ..beginPath()
         ..fillStyle = '#764e00'
         ..moveTo(shape.points.first.x + game.cameraXShift, shape.points.first.y + game.cameraYShift);
 

@@ -28,10 +28,17 @@ class Game {
 
     final random = new Random();
 
-    for (var i = 0; i < 1; i++) {
+    worms.add(
+      new Worm()
+        ..position = new Point(16, random.nextInt(256))
+        ..color = COLORS[random.nextInt(COLORS.length)]
+        ..game = this
+    );
+
+    for (var i = 0; i < 5; i++) {
       worms.add(
         new Worm()
-          ..ai = false
+          ..ai = true
           ..position = new Point(16, random.nextInt(256))
           ..color = COLORS[random.nextInt(COLORS.length)]
           ..game = this
