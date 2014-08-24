@@ -16,7 +16,9 @@ class Worm {
   Point position;
   Point previousPosition;
   double speed = 0.0;
+  Point direction;
   double gravity = 0.1;
+  int health = 100;
   int size = 32;
   bool ai = false;
   Color color;
@@ -61,6 +63,7 @@ class Worm {
       final normalized = new Point(length.x / maxLength, length.y / maxLength);
       final left = new Point(-normalized.y, normalized.x);
       final right = new Point(normalized.y, -normalized.x);
+      direction = normalized;
 
       final leftX = position.x + left.x * size / 2;
       final leftY = position.y + left.y * size / 2;
@@ -77,32 +80,45 @@ class Worm {
     if (tails.length > 100) tails = tails.sublist(0, 100);
   }
 
-  void draw() {
-    for (var i = 0, length = tails.length; i < length - 1; i++) {
-      final opacity = 1 - 1 / (tails.length / i);
-      final tail = tails[i];
-      final sideTail = tails[i + 1];
+  bool collides() {
+    final imageData = game.level.imageData;
+    final hit = (imageData.width * position.y.round() + position.x.round()) * 4;
+    return imageData.data[hit] == 255;
+  }
 
-      game.context
-        ..beginPath()
-        ..fillStyle = color.toRgba(opacity)
-        ..moveTo(tail.left.x + game.cameraXShift, tail.left.y + game.cameraYShift)
-        ..lineTo(tail.right.x + game.cameraXShift, tail.right.y + game.cameraYShift)
-        ..lineTo(sideTail.right.x + game.cameraXShift, sideTail.right.y + game.cameraYShift)
-        ..lineTo(sideTail.left.x + game.cameraXShift, sideTail.left.y + game.cameraYShift)
-        ..lineTo(tail.left.x + game.cameraXShift, tail.left.y + game.cameraYShift)
-        ..fill()
-        ..closePath();
+  void draw() {
+    game.context
+      ..beginPath()
+      ..fillStyle = color.toString()
+      ..moveTo(tails.first.left.x + game.cameraXShift, tails.first.left.y + game.cameraYShift);
+
+    tails.skip(1).forEach((tail) {
+      game.context.lineTo(tail.left.x + game.cameraXShift, tail.left.y + game.cameraYShift);
+    });
+
+    tails.reversed.forEach((tail) {
+      game.context.lineTo(tail.right.x + game.cameraXShift, tail.right.y + game.cameraYShift);
+    });
+
+    game.context
+      ..fill()
+      ..closePath();
+
+    if (collides()) {
+      drawEllipse(position.x + game.cameraXShift, position.y - 64 + game.cameraYShift, size / 2, new Color(255, 0, 0));
+      health = max(1, health - 1);
+
     }
 
     drawEllipse(position.x + game.cameraXShift, position.y + game.cameraYShift, size / 2, color);
   }
 
   void drawEllipse(num x, num y, size, Color color) {
-    game.context.beginPath();
-    game.context.arc(x, y, size, 0, 2 * PI, false);
-    game.context.fillStyle = color.toString();
-    game.context.fill();
-    game.context.closePath();
+    game.context
+      ..beginPath()
+      ..arc(x, y, size, 0, 2 * PI, false)
+      ..fillStyle = color.toString()
+      ..fill()
+      ..closePath();
   }
 }

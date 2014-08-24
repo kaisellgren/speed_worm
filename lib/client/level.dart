@@ -14,6 +14,7 @@ class Level {
   int size = 8192;
   List<Shape> shapes = [];
   Random random = new Random();
+  ImageData imageData;
 
   Level(this.game) {
     // Bottom ground.
@@ -50,21 +51,38 @@ class Level {
     points.add(new Point(0, game.maxHeight));
 
     shapes.add(new Shape(points));
+
+    _createCollisionMap();
+  }
+
+  void _createCollisionMap() {
+    var canvas = new CanvasElement()
+      ..width = size
+      ..height = game.maxHeight
+      ..context2D.fillStyle = 'black'
+      ..context2D.fillRect(0, 0, size, game.maxHeight);
+
+    _drawInternal(canvas.context2D, 0, 0, '#fff');
+    imageData = canvas.context2D.getImageData(0, 0, size, game.maxHeight);
   }
 
   void draw() {
+    _drawInternal(game.context, game.cameraXShift, game.cameraYShift, '#764e00');
+  }
+
+  void _drawInternal(CanvasRenderingContext2D context, num xOffset, num yOffset, String color) {
     shapes.forEach((shape) {
-      game.context
+      context
         ..beginPath()
-        ..fillStyle = '#764e00'
-        ..moveTo(shape.points.first.x + game.cameraXShift, shape.points.first.y + game.cameraYShift);
+        ..fillStyle = color
+        ..moveTo(shape.points.first.x + xOffset, shape.points.first.y + yOffset);
 
       for (var i = 1, length = shape.points.length; i < length; i++) {
-        game.context
-          ..lineTo(shape.points[i].x + game.cameraXShift, shape.points[i].y + game.cameraYShift);
+        context
+          ..lineTo(shape.points[i].x + xOffset, shape.points[i].y + yOffset);
       }
 
-      game.context
+      context
         ..fill()
         ..closePath();
     });

@@ -35,7 +35,7 @@ class Game {
         ..game = this
     );
 
-    for (var i = 0; i < 5; i++) {
+    for (var i = 0; i < 0; i++) {
       worms.add(
         new Worm()
           ..ai = true
